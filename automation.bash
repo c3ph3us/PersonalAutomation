@@ -3,6 +3,7 @@ function usage
 {
   printf "\nUsage:   automation.bash [-do device] [-bo user|userdebug|eng] [-c] [-ko] [-s] [-su] [-fs] [-u] [-h]\n"
   printf "
+-adb|  --adb-sideload    This will attempt to adb sideload the built kernel/rom.
 -do |  --device-overide  Overides the device specified in config.cfg
 -bo |  --build-overide   Overides the build specified in config.cfg
 -c  |  --clober          Clobbers your build before starting
@@ -19,6 +20,8 @@ source config.cfg
 
 while [ "$1" != "" ]; do
     case $1 in
+        -adb | --adb-sideload )   adb=1
+                                  ;;
         -do  | --device-overide ) shift
                                   device=$1
                                   ;;
@@ -140,5 +143,17 @@ if [ "$upload" == "1" ]
       else
         echo "Uploading ROM to GDrive/$device/LineageRoms"
         rclone copy $sourcelocation/out/target/product/$device/lineage-trader418-$device-$now--$time1.zip $share:$device/LineageRoms
+    fi
+fi
+
+if [ "$adb" == "1" ]
+  then
+    if [ "$kernelonly" != "1" ]
+      then
+        read -n1 -r -p "Please attach your device now ready for sideloading. Press any key to continue..." key
+        echo "Attempting to adb sideload rom to $device"
+        adb sideload $sourcelocation/out/target/product/$device/lineage-trader418-$device-$now--$time1.zip
+      else
+        echo "Cannot sideload a kernel as it is not a flashable zip. it is a boot.img."
     fi
 fi
