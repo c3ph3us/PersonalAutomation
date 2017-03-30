@@ -1,12 +1,14 @@
 #!/bin/bash
 function usage
 {
-  printf "\nUsage:   automation.bash [-do device] [-c] [-ko] [-s] [-fs] [-u] [-h]\n"
+  printf "\nUsage:   automation.bash [-do device] [-bo user|userdebug|eng] [-c] [-ko] [-s] [-su] [-fs] [-u] [-h]\n"
   printf "
 -do |  --device-overide  Overides the device specified in config.cfg
+-bo |  --build-overide   Overides the build specified in config.cfg
 -c  |  --clober          Clobbers your build before starting
 -ko |  --kernel-only     Only builds the kernel for the specified device
 -s  |  --sync            Repo sync before build
+-su |  --super-user      Include root in the build
 -fs |  --force-sync      Repo sync --force-sync before building
 -u  |  --upload          Do you want to upload using rclone
 -h  |  --help            You're looking at it! :) \n"
@@ -20,11 +22,16 @@ while [ "$1" != "" ]; do
         -do  | --device-overide ) shift
                                   device=$1
                                   ;;
+        -bo  | --build-overide )  shift
+                                  build=$1
+                                  ;;
         -c  | --clobber )         clobber=1
                                   ;;
         -ko | --kernel-only )     kernelonly=1
                                   ;;
         -s  | --sync )            sync=1
+                                  ;;
+        -su  | --superuser )      su=1
                                   ;;
         -fs | --force-sync )      forcesync=1
                                   sync=1
@@ -46,6 +53,26 @@ if [ "$device" == "The Device Codename You are building. For example, the Samsun
     exit
 fi
 
+case "$build" in
+        user)
+            build=user
+            ;;
+        userdebug)
+            build=userdebug
+            ;;
+        eng)
+            build=eng
+            ;;
+        user|userdebug|eng)
+            echo "Please Specify A build type. This Can Be Done In config.cfg Or With The --build-overide Flag."
+            exit
+            ;;
+
+        *)
+            echo "Build type not recognised"
+            exit 1
+esac
+
 if [ "$sourcelocation" == "Path To Your Android Source Location" ]
   then
     echo "Please Specify Where Your Android Source Code Is Locatated In config.cfg"
@@ -59,6 +86,14 @@ if [ "$upload" == "1" ]
         echo "You have chosen to upload using rclone but havent specified your rclone storage name in config.cfg"
         exit
     fi
+fi
+
+if [ "$su" == "1" ]
+  then
+    export WITH_SU=true
+    echo "Building with root. SU = 1."
+  else
+    echo "Building without root. SU was not 1."
 fi
 
 now=$(date +"%m_%d_%Y")
@@ -93,7 +128,7 @@ if [ "$kernelonly" == "1" ]
     mv $sourcelocation/out/target/product/$device/boot.img $sourcelocation/out/target/product/$device/boot-trader418-$now--$time1.img
   else
     echo "Building ROM for $device"
-    brunch $device
+    brunch $device $build
     mv $sourcelocation/out/target/product/$device/lineage*.zip $sourcelocation/out/target/product/$device/lineage-trader418-$device-$now--$time1.zip
 fi
 if [ "$upload" == "1" ]
