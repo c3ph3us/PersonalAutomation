@@ -96,7 +96,7 @@ if [ "$su" == "1" ]
     echo "Building without root. SU was not 1."
 fi
 
-now=$(date +"%m_%d_%Y")
+now=$(date +%Y%m%d)
 time1=$(date +"%H-%M")
 
 echo "Changing to $sourcelocation"
@@ -129,7 +129,7 @@ if [ "$kernelonly" == "1" ]
   else
     echo "Building ROM for $device"
     brunch $device $build
-    mv $sourcelocation/out/target/product/$device/lineage*.zip $sourcelocation/out/target/product/$device/lineage-trader418-$device-$now--$time1.zip
+    mv $sourcelocation/out/target/product/$device/lineage-14.1-$now-UNOFFICIAL-$device.zip $sourcelocation/out/target/product/$device/lineage-trader418-$device-$now--$time1.zip
 fi
 if [ "$upload" == "1" ]
   then
