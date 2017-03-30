@@ -1,18 +1,18 @@
 #!/bin/bash
 function usage
 {
-  printf "\nUsage:   automation.bash [-do device] [-bo user|userdebug|eng] [-c] [-ko] [-s] [-su] [-fs] [-u] [-h]\n"
+  printf "\nUsage:   automation.bash [-adb] [-bo user|userdebug|eng] [-c] [-do device] [-fs] [-h] [-ko] [-s] [-su] [-u] \n"
   printf "
 -adb|  --adb-sideload    This will attempt to adb sideload the built kernel/rom.
--do |  --device-overide  Overides the device specified in config.cfg
 -bo |  --build-overide   Overides the build specified in config.cfg
--c  |  --clober          Clobbers your build before starting
+-c  |  --clobber          Clobbers your build before starting
+-do |  --device-overide  Overides the device specified in config.cfg
+-fs |  --force-sync      Repo sync --force-sync before building
+-h  |  --help            You're looking at it! :)
 -ko |  --kernel-only     Only builds the kernel for the specified device
 -s  |  --sync            Repo sync before build
 -su |  --super-user      Include root in the build
--fs |  --force-sync      Repo sync --force-sync before building
--u  |  --upload          Do you want to upload using rclone
--h  |  --help            You're looking at it! :) \n"
+-u  |  --upload          Do you want to upload using rclone \n"
   exit
 }
 
